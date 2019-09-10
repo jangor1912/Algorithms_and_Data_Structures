@@ -103,7 +103,7 @@ int mainjkuhu() {
 	return 0;
 }
 
-int main() {
+int main_dnvj() {
 	int segments_no, begining, ending;
 	cin >> segments_no;
 	Segment** tab = new Segment*[segments_no];
