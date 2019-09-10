@@ -56,7 +56,7 @@ Tuple* lcis(int* A, int a_size, int* B, int b_size) {
 
 }
 
-int main() {
+int main_jksdvnjkdfn() {
 	int a_size, b_size;
 	cin >> a_size;
 	int * A = new int[a_size];
