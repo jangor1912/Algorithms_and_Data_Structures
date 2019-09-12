@@ -15,8 +15,61 @@ long long min3(long long val1, long long val2) {
 	return val2;
 }
 
-long long get_strongest(long long* A, long long n) {
-	long long min = A[0];
+int* count_prev_array(int* A, int n) {
+	int* prev = new int[n];
+	prev[0] = -1;
+	for (int i = 1; i < n; i++) {
+		int j = i - 1;
+		while (j >= 0 && A[j] >= A[i]) {
+			j = prev[j];
+		}
+		prev[i] = j;
+	}
+	return prev;
+}
+
+int* count_next_array(int* A, int n) {
+	int* next = new int[n];
+	next[n - 1] = n;
+	for (int i = n - 2; i >= 0; i--) {
+		int j = i + 1;
+		while (j < n && A[j] >= A[i]) {
+			j = next[j];
+		}
+		next[i] = j;
+	}
+	return next;
+}
+
+long long* get_prefix_sum_array(int* A, int n) {
+	long long* P = new long long[n+1];
+	P[0] = 0;
+	for (int i = 1; i < n+1; i++) {
+		P[i] = P[i - 1] + A[i-1];
+	}
+	return P;
+}
+
+long long get_strongest(int* A, long long n) {
+	long long result = -1;
+	int* prev = count_prev_array(A, n);
+	int* next = count_next_array(A, n);
+	long long* P = get_prefix_sum_array(A, n);
+	for (int i = 0; i < n; i++) {
+		long long cur_strength = (long long) P[next[i]] - P[prev[i]+1];
+		if (cur_strength == 0) {
+			cur_strength = (long long) A[i] * A[i];
+		}
+		else {
+			cur_strength = (long long) cur_strength * A[i];
+		}
+
+		if (cur_strength > result) {
+			result = cur_strength;
+		}
+	}
+	return result;
+	/*long long min = A[0];
 	long long size = n;
 	long long** D = new long long*[n];
 	for (long long i = 0; i < n; i++) {
@@ -48,7 +101,7 @@ long long get_strongest(long long* A, long long n) {
 	for (long long i = 0; i < n; i++) {
 		delete D[i];
 	}
-	delete D;
+	delete D;*/
 	/*for (int i = 0; i < n; i++) {
 		D[i][0] = 0;
 		if (i != 0) {
@@ -68,19 +121,19 @@ long long get_strongest(long long* A, long long n) {
 
 
 
-int main() {
-	long long queries;
+int main_akjsc() {
+	int queries;
 	cin >> queries;
-	for (long long i = 0; i < queries; i++) {
-		long long n;
+	for (int i = 0; i < queries; i++) {
+		int n;
 		cin >> n;
-		long long* tab = new long long[n];
-		for (long long j = 0; j < n; j++) {
+		int* tab = new int[n];
+		for (int j = 0; j < n; j++) {
 			cin >> tab[j];
 		}
 		long long strongest = get_strongest(tab, n);
 		cout << "Testcase#" << i << ": " << strongest << "\n";
-		delete tab;
+		delete[] tab;
 	}
 	return 0;
 }
