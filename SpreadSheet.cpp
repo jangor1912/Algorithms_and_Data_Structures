@@ -32,7 +32,7 @@ void count_sorted(int** A, int n, int m, int** sorted, int* super_sorted) {
 
 }
 
-int main() {
+int main_shdjkvch() {
 	int n, m;
 	cin >> n;
 	cin >> m;
