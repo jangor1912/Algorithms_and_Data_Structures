@@ -1,11 +1,11 @@
 #include <iostream>
 using namespace std;
 
-bool min9(int val1, int val2) {
+int min9(int val1, int val2) {
 	if (val1 < val2) {
-		return true;
+		return val1;
 	}
-	return false;
+	return val2;
 }
 
 struct Entry {
@@ -70,6 +70,7 @@ struct Graph {
 		this->SSS_indexes = new int[n];
 		this->SSS_nodes = new Stack * [n];
 		for (int i = 0; i < n; i++) {
+			this->Color[i] = 0;
 			this->neighbours[i] = nullptr;
 			this->SSS_nodes[i] = new Stack();
 		}
@@ -93,7 +94,7 @@ struct Graph {
 			while (p != nullptr) {
 				v = p->v;
 				if (Color[v] == 0) {
-					Low[u] = min9(Low[u], low_dfs(u, time, sss_num));
+					Low[u] = min9(Low[u], low_dfs(v, time, sss_num));
 				}
 				else if (Color[v] == 1) {
 					Low[u] = min9(Low[u], Preorder[v]);
@@ -105,6 +106,7 @@ struct Graph {
 					v = stack->pop();
 					SSS_indexes[v] = sss_num;
 					SSS_nodes[sss_num]->push(v);
+					Color[v] = 2;
 				} while (u != v);
 				sss_num++;
 			}
@@ -114,7 +116,8 @@ struct Graph {
 };
 
 
-int main() {
+int main_asjkcbe() {
+	int final_cost = 0;
 	int n;
 	cin >> n;
 	int* cost = new int[n + 1];
@@ -126,7 +129,7 @@ int main() {
 		int u = i;
 		int v;
 		cin >> v;
-		G->add_edge(u, v);
+		G->add_edge(u, v-1);
 	}
 	int time = 0;
 	int sss_num = 0;
@@ -136,13 +139,38 @@ int main() {
 		}
 	}
 
-	cout << "Drukuje silnie spojne skladowe:\n";
+
+	for (int i = 0; i < sss_num; i++) {
+		int cycle_size = G->SSS_nodes[i]->size;
+		if (cycle_size > 1) {
+			int min_cost = INT_MAX;
+			for(int j=0;j<cycle_size;j++){
+				int cur_u = G->SSS_nodes[i]->pop() + 1;
+				min_cost = min9(min_cost, cost[cur_u]);
+			}
+			final_cost += min_cost;
+		}
+		else {
+			int u = G->SSS_nodes[i]->pop();
+			Neighbour* p = G->neighbours[u];
+			while (p != nullptr) {
+				if (p->v == p->u) {
+					final_cost += cost[p->u + 1];
+					break;
+				}
+				p = p->next;
+			}
+		}
+	}
+
+	/*cout << "Drukuje silnie spojne skladowe:\n";
 	for (int i = 0; i < sss_num; i++) {
 		cout << "Stos nr " << i << ": ";
 		while (!G->SSS_nodes[i]->empty()) {
 			cout << G->SSS_nodes[i]->pop()+1 << " ";
 		}
 		cout << "\n";
-	}
+	}*/
+	std::cout << final_cost;
 	return 0;
 }
